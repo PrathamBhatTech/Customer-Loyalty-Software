@@ -1,3 +1,5 @@
+package ooad.customerloyalty.customer.customer.models;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,6 +9,8 @@ import java.time.LocalDate;
 @Document("customer")
 public class Customer   {
     @Id
+    private String id;
+
     @NotBlank(message = "Customer username is required")
     private String username;
 
@@ -18,16 +22,17 @@ public class Customer   {
     @Size(min = 2, max = 30, message = "Name must be between 2 and 30 characters")
     private String name;
 
-    @NotEmpty(message = "Date of birth is requi0red")
+    @NotEmpty(message = "Date of birth is required")
     private LocalDate dob;
 
     @NotEmpty
-    private int phoneNumber;
+    private String phoneNumber;
+
 
     public Customer() {
     }
 
-    public Customer(String username, String password, String name, LocalDate dob, int phoneNumber) {
+    public Customer(String username, String password, String name, LocalDate dob, String phoneNumber) {
         this.username = username;
         this.password = password;
         this.name = name;
@@ -67,11 +72,11 @@ public class Customer   {
         this.dob = dob;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 }

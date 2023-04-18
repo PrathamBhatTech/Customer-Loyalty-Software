@@ -50,3 +50,15 @@ atlassian-ide-plugin.xml
 
 # VS Code
 .vscode/
+
+# spring intis
+*.zip
+
+*.jar
+*.properties
+
+*.cmd
+mvnw
+.gitignore
+
+*/.mvn
