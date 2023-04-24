@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Membership</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Custom styles here */
+    </style>
+</head>
+<body>
+<!-- Main Content Section -->
+<main>
+    <div class="container">
+        <h1>Membership Details</h1>
+        <div class="card">
+            <div class="card-header">
+                Membership Tier
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Gold</h5>
+                <p class="card-text">You have unlocked all the premium features.</p>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                Points
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><span id="points">1500</span></h5>
+                <p class="card-text">You can redeem these points for rewards.</p>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bootstrap JavaScript -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!-- Custom JavaScript -->
+<script>
+    window.addEventListener('load', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8082/rewards/get-points');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var profile = xhr.response;
+                var p = document.querySelector('#points');
+                p.innerHTML = profile.points;
+            } else {
+                alert('Error: ' + xhr.status);
+            }
+        };
+        xhr.send();
+    });
+</script>
+</body>
+</html>
