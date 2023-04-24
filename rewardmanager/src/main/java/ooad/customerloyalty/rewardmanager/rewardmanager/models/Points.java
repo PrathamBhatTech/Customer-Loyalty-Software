@@ -17,10 +17,18 @@ public class Points {
     @Min(value = 0, message = "Points must be greater than 0")
     private int points;
 
+    @NotBlank(message = "Total Points is required")
+    @Min(value = 0, message = "Total Points must be greater than 0")
+    private int totalPoints;
 
-    public Points(String username, int points) {
+    private String membershipTier;
+
+
+    public Points(String username, int points, int totalPoints, String membershipTier) {
         this.username = username;
         this.points = points;
+        this.totalPoints = totalPoints;
+        this.membershipTier = membershipTier;
     }
 
     public String getUsername() {
@@ -37,5 +45,21 @@ public class Points {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    public String getMembershipTier() {
+        return membershipTier;
+    }
+
+    public void setMembershipTier(String membershipTier) {
+        this.membershipTier = membershipTier;
     }
 }

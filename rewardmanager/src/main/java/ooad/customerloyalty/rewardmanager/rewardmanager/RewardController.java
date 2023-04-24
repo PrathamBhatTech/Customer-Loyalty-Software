@@ -34,7 +34,7 @@ public class RewardController {
     @PostMapping("/transaction")
     @CrossOrigin
     public String transaction(@RequestBody Transaction transaction)    {
-        return pointFunctions.addPoints(transaction.getPrice());
+        return pointFunctions.addPoints(transaction);
     }
 
     @PostMapping("/set-user")

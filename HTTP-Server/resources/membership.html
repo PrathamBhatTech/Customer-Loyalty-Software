@@ -21,7 +21,7 @@
                 Membership Tier
             </div>
             <div class="card-body">
-                <h5 class="card-title">Gold</h5>
+                <h5 class="card-title" id="membership-tier"></h5>
                 <p class="card-text">You have unlocked all the premium features.</p>
             </div>
         </div>
@@ -31,8 +31,17 @@
                 Points
             </div>
             <div class="card-body">
-                <h5 class="card-title"><span id="points">1500</span></h5>
+                <h5 class="card-title"><span id="points"></span></h5>
                 <p class="card-text">You can redeem these points for rewards.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                Total Points
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><span id="totalPoints"></span></h5>
+                <p class="card-text">Total points you have collected.</p>
             </div>
         </div>
     </div>
@@ -52,6 +61,10 @@
                 var profile = xhr.response;
                 var p = document.querySelector('#points');
                 p.innerHTML = profile.points;
+                var p = document.querySelector('#membership-tier');
+                p.innerHTML = profile.membershipTier;
+                var p = document.querySelector('#totalPoints');
+                p.innerHTML = profile.totalPoints;
             } else {
                 alert('Error: ' + xhr.status);
             }

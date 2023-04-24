@@ -18,6 +18,7 @@
         <h1>Transaction Page</h1>
         <div class="row">
             <div class="col-md-6">
+                <h2>Membership Tier: <span id="membershipTier"></span>
                 <!-- Points Balance -->
                 <h2>Current Points: <span id="points"></span></h2>
             </div>
@@ -75,6 +76,8 @@
                 currentPoints = xhr.response;
                 const span = document.getElementById("points");
                 span.innerHTML = currentPoints.points;
+                const sp = document.getElementById("membershipTier");
+                sp.innerHTML = currentPoints.membershipTier;
             }
             else {
                 alert('Request failed.  Returned status of ' + xhr.status);
@@ -129,7 +132,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({"merchant": "Mallya Enterprises", "price": price, "points": points})
+                body: JSON.stringify({"merchant": "Mallya Enterprises", "price": price, "pointsRedeemed": points})
             });
             if (response.ok) {
                 // reload page
