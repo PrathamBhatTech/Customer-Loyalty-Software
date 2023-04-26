@@ -1,6 +1,8 @@
 package ooad.customerloyalty.cutomerv2.customerv2;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ooad.customerloyalty.cutomerv2.customerv2.models.Auth;
 import ooad.customerloyalty.cutomerv2.customerv2.models.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +11,21 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.UUID;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
+
+    Logger logger = Logger.getLogger("transactions");
+    FileHandler fh;
+    Date date = new Date();
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -27,19 +38,32 @@ public class CustomerController {
 
     RestTemplate restTemplate = new RestTemplate();
 
-
+    ObjectMapper mapper = new ObjectMapper();
     private String username;
 
     public CustomerController(WebClient.Builder webClientBuilder) {
         this.webClientBuilder = webClientBuilder;
+
+        try    {
+            fh = new FileHandler("customers.log", true);
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+            logger.info("Customer Controller Started");
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @PostMapping("/login-auth")
     @CrossOrigin
     public String loginAuth(@RequestBody Auth auth)    {
-//        System.out.println();
+
         if(customerFunctions.checkAuth(auth))   {
             username = auth.getUsername();
+
+            String message = "User " + username + " logged in.";
+            logger.info(message);
 
             webClientBuilder.build()
                 .post()
@@ -51,6 +75,10 @@ public class CustomerController {
 
             return "true";
         }
+
+        String message = "Invalid login to user: " + auth.getUsername();
+        logger.warning(message);
+
         return "false";
     }
 
@@ -58,6 +86,10 @@ public class CustomerController {
     @CrossOrigin
     public String signup(@RequestBody Customer customer)    {
         if(customerRepository.findCustomerByUsername(customer.getUsername()) == null)    {
+
+            String message = "Account created with username: " + customer.getUsername();
+            logger.info(message);
+
             customerRepository.save(customer);
 
             // add user to points collection
@@ -106,4 +138,21 @@ public class CustomerController {
 
         return customerRepository.save(customer);
     }
+
+    @GetMapping("/get-logs")
+    @CrossOrigin
+    public List<String> getLogs() throws JsonProcessingException {
+        List<String> logs = new ArrayList<>();
+        try {
+            Scanner scanner = new Scanner(new File("customers.log"));
+            while (scanner.hasNextLine()) {
+                logs.add(scanner.nextLine());
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return logs;
+    }
+
 }

@@ -4,19 +4,49 @@ import ooad.customerloyalty.rewardmanager.rewardmanager.models.Points;
 import ooad.customerloyalty.rewardmanager.rewardmanager.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 @Component("pointFunctions")
 public class PointFunctions {
+
+
+    Logger logger = Logger.getLogger("transactions");
+    FileHandler fh;
+
     private final PointsRepository pointsRepository;
 
     private String username;
 
+    Map<String, Integer> pointConversionDict = new HashMap<String, Integer>();
+
     @Autowired
-    public PointFunctions(@Qualifier("PointsRepository") PointsRepository pointsRepository) {
+    public PointFunctions(@Qualifier("PointsRepository") PointsRepository pointsRepository) throws IOException {
         this.pointsRepository = pointsRepository;
+
+        try    {
+            fh = new FileHandler("transactions.log", true);
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+            logger.info("Reward Manager Started");
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
+
+        pointConversionDict.put("Bronze", 200);
+        pointConversionDict.put("Silver", 100);
+        pointConversionDict.put("Gold", 50);
+        pointConversionDict.put("Platinum", 25);
+        
     }
 
     public void setUsername(String username) {
@@ -41,14 +71,21 @@ public class PointFunctions {
 
         int pointConversion = getPointConversion();
 
-
-
         int npoints = points.getPoints();
         npoints += transaction.getPrice()/pointConversion - transaction.getPointsRedeemed();
         points.setPoints(npoints);
         points.setTotalPoints(points.getTotalPoints() + transaction.getPrice()/pointConversion);
 
         pointsRepository.save(points);
+
+        String message = "Transaction of amount " + transaction.getPrice() +
+                " done by " + username +
+                " at " + LocalDateTime.now() +
+                " with " + transaction.getPointsRedeemed() +
+                " points redeemed" +
+                " to Merchant " + transaction.getMerchant();
+        logger.info(message);
+
 
         checkMembership();
 
@@ -83,12 +120,20 @@ public class PointFunctions {
     public int getPointConversion() {
         Points points = getPoints();
 
-        return switch (points.getMembershipTier()) {
-            case "Bronze" -> 200;
-            case "Silver" -> 100;
-            case "Gold" -> 80;
-            case "Platinum" -> 25;
-            default -> 10000;
-        };
+        return pointConversionDict.get(points.getMembershipTier());
+    }
+
+    public List<String> getLogs()    {
+        List<String> logs = new ArrayList<>();
+        try {
+            Scanner scanner = new Scanner(new File("transactions.log"));
+            while (scanner.hasNextLine()) {
+                logs.add(scanner.nextLine());
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return logs;
     }
 }

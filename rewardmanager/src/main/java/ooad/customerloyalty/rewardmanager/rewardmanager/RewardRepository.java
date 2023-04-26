@@ -11,9 +11,14 @@ import java.util.List;
 @Repository
 @Qualifier("rewardRepository")
 public interface RewardRepository extends MongoRepository<Reward, String> {
-    @Query("{id:'?0'}")
-    Reward findRewardById(String id);
+    @Query("{name:'?0'}")
+    Reward findRewardByName(String name);
 
     @Query("{}")
     List<Reward> getAllRewards();
+
+    // get reward that has the least value for unitsSold
+//    Reward findTopByOrderByUsoldAsc();
+    Reward findFirstByOrderByUsoldAsc();
+
 }

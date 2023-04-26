@@ -21,60 +21,27 @@
     <table class="table">
       <thead>
       <tr>
-        <th>ID</th>
         <th>Name</th>
-        <th>Description</th>
-        <th>Points Required</th>
-        <th>Action</th>
+        <th>Cost</th>
+        <th>Units Sold</th>
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>1</td>
-        <td>Free Coffee</td>
-        <td>Get a free coffee of your choice.</td>
-        <td>100</td>
-        <td>
-          <a href="#">Edit</a>
-          <a href="#">Delete</a>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>10% Discount</td>
-        <td>Get a 10% discount on your order.</td>
-        <td>50</td>
-        <td>
-          <a href="#">Edit</a>
-          <a href="#">Delete</a>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Free Dessert</td>
-        <td>Get a free dessert of your choice.</td>
-        <td>150</td>
-        <td>
-          <a href="#">Edit</a>
-          <a href="#">Delete</a>
-        </td>
-      </tr>
       </tbody>
     </table>
     <br>
     <hr>
-    <h2>Generate Program Report</h2>
-    <form>
-      <div class="form-group">
-        <label for="start-date">Start Date:</label>
-        <input type="date" class="form-control" id="start-date">
+    <!-- Divide the page into two columns and insert customer logs in the left and transaction logs in the right logs are obtained from get request -->
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Customer Activity</h2>
+        <p id="customer-log"></p>
       </div>
-      <div class="form-group">
-        <label for="end-date">End Date:</label>
-        <input type="date" class="form-control" id="end-date">
+      <div class="col-md-6">
+        <h2>Transaction History</h2>
+        <p id="transaction-log"></p>
       </div>
-      <button type="submit" class="btn btn-primary">Generate Report</button>
-    </form>
+    </div>
   </div>
 </main>
 <!-- Bootstrap JavaScript -->
@@ -83,7 +50,69 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <!-- Custom JavaScript -->
 <script>
-  // Custom JavaScript code here
+  window.addEventListener('load', function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:8082/rewards/get-rewards');
+    xhr.responseType = 'json';
+    xhr.onload = function ()  {
+      if (xhr.status === 200) {
+        let rewards = xhr.response;
+        console.log(rewards);
+        // rewards = JSON.parse(rewards);
+        const tbody = document.querySelector('tbody');
+        for (let i = 0; i < rewards.length; i++) {
+            const tr = document.createElement('tr');
+            const td1 = document.createElement('td');
+            td1.textContent = rewards[i].name;
+            const td2 = document.createElement('td');
+            td2.textContent = rewards[i].cost;
+            const td3 = document.createElement('td');
+            td3.textContent = rewards[i].usold;
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tbody.appendChild(tr);
+        }
+      }
+    }
+    xhr.send();
+  });
+
+  window.addEventListener('load', function (){
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:8081/customer/get-logs');
+    // xhr.responseType = 'json';
+    xhr.onload = function ()  {
+      if (xhr.status === 200) {
+        let clog = xhr.response;
+        console.log(clog);
+        clog = JSON.parse(clog);
+        const p = document.getElementById("customer-log");
+        for (let i = 0; i < clog.length; i++) {
+          p.innerHTML += clog[i] + "<br>";
+        }
+      }
+    }
+    xhr.send();
+  });
+
+  window.addEventListener('load', function (){
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://localhost:8082/rewards/get-logs');
+      xhr.responseType = 'json';
+      xhr.onload = function ()  {
+          if (xhr.status === 200) {
+            let tlog = xhr.response;
+            console.log(tlog);
+            // tlog = JSON.parse(tlog);
+            const p = document.getElementById("transaction-log");
+            for (let i = 0; i < tlog.length; i++) {
+              p.innerHTML += tlog[i] + "<br>";
+            }
+          }
+      }
+      xhr.send();
+  });
 </script>
 </body>
 </html>

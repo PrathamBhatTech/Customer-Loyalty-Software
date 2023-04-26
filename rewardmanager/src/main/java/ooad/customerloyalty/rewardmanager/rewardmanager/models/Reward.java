@@ -1,27 +1,17 @@
 package ooad.customerloyalty.rewardmanager.rewardmanager.models;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "rewards")
 public class Reward {
-    private String id;
     private String name;
-    private String description;
-    private int pointsRequired;
+    private int cost;
+    private int usold;
 
-    public Reward() {
-    }
-
-    public Reward(String id, String name, String description, int pointsRequired) {
-        this.id = id;
+    public Reward(String name, int cost, int usold) {
         this.name = name;
-        this.description = description;
-        this.pointsRequired = pointsRequired;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        this.cost = cost;
+        this.usold = usold;
     }
 
     public String getName() {
@@ -32,19 +22,19 @@ public class Reward {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public int getCost() {
+        return cost;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 
-    public int getPointsRequired() {
-        return pointsRequired;
+    public int getUsold() {
+        return usold;
     }
 
-    public void setPointsRequired(int pointsRequired) {
-        this.pointsRequired = pointsRequired;
+    public void setUsold(int usold) {
+        this.usold = usold;
     }
 }
