@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Company Admin</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <style>
+    /* Custom styles here */
+  </style>
+</head>
+<body>
+<!-- Main Content Section -->
+<main>
+  <div class="container">
+    <h1>Company Admin Dashboard</h1>
+    <hr>
+    <h2>Manage Rewards</h2>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Cost</th>
+        <th>Units Sold</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <br>
+    <hr>
+    <!-- Divide the page into two columns and insert customer logs in the left and transaction logs in the right logs are obtained from get request -->
+    <div class="row">
+      <div class="col-md-6">
+        <h2>Customer Activity</h2>
+        <p id="customer-log"></p>
+      </div>
+      <div class="col-md-6">
+        <h2>Transaction History</h2>
+        <p id="transaction-log"></p>
+      </div>
+    </div>
+  </div>
+</main>
+<!-- Bootstrap JavaScript -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!-- Custom JavaScript -->
+<script>
+  window.addEventListener('load', function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:8082/rewards/get-rewards');
+    xhr.responseType = 'json';
+    xhr.onload = function ()  {
+      if (xhr.status === 200) {
+        let rewards = xhr.response;
+        console.log(rewards);
+        // rewards = JSON.parse(rewards);
+        const tbody = document.querySelector('tbody');
+        for (let i = 0; i < rewards.length; i++) {
+            const tr = document.createElement('tr');
+            const td1 = document.createElement('td');
+            td1.textContent = rewards[i].name;
+            const td2 = document.createElement('td');
+            td2.textContent = rewards[i].cost;
+            const td3 = document.createElement('td');
+            td3.textContent = rewards[i].usold;
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tbody.appendChild(tr);
+        }
+      }
+    }
+    xhr.send();
+  });
+
+  window.addEventListener('load', function (){
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:8081/customer/get-logs');
+    // xhr.responseType = 'json';
+    xhr.onload = function ()  {
+      if (xhr.status === 200) {
+        let clog = xhr.response;
+        console.log(clog);
+        clog = JSON.parse(clog);
+        const p = document.getElementById("customer-log");
+        for (let i = 0; i < clog.length; i++) {
+          p.innerHTML += clog[i] + "<br>";
+        }
+      }
+    }
+    xhr.send();
+  });
+
+  window.addEventListener('load', function (){
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://localhost:8082/rewards/get-logs');
+      xhr.responseType = 'json';
+      xhr.onload = function ()  {
+          if (xhr.status === 200) {
+            let tlog = xhr.response;
+            console.log(tlog);
+            // tlog = JSON.parse(tlog);
+            const p = document.getElementById("transaction-log");
+            for (let i = 0; i < tlog.length; i++) {
+              p.innerHTML += tlog[i] + "<br>";
+            }
+          }
+      }
+      xhr.send();
+  });
+</script>
+</body>
+</html>

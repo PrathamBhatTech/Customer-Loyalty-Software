@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Customer Loyalty Software</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="http://localhost:8080/transaction">Buy</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="http://localhost:8080/membership">Membership</a>
+            </li>
+            <li class="nav-item" id="admin">
+                <a class="nav-link" href="http://localhost:8080/admin">Company</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="http://localhost:8080/edit-profile">Edit Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-danger" id="logout-btn">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container mt-5">
+    <h3>Profile</h3>
+    <div class="col-md-6">
+        <p><b>Username:</b> <span id="username"></span></p>
+        <p><b>Name:</b> <span id="name"></span></p>
+        <p><b>Phone:</b> <span id="phoneNumber"></span></p>
+        <p><b>Date of Birth:</b> <span id="dob"></span></p>
+    </div>
+    <div class="col-md-6">
+        <p><b>Points:</b> <span id="points"></span></p>
+    </div>
+</div>
+<script>
+    window.addEventListener('load', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8081/customer/profile');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var profile = xhr.response;
+
+                var username = document.querySelector('#username');
+                username.innerHTML = profile.username;
+                document.getElementById("admin").hidden = profile.username !== "admin";
+
+                var name = document.querySelector('#name');
+                name.innerHTML = profile.name;
+
+                var phoneNumber = document.querySelector('#phoneNumber');
+                phoneNumber.innerHTML = profile.phoneNumber;
+
+                var dob = document.querySelector('#dob');
+                dob.innerHTML = profile.dob;
+            } else {
+                alert('Error: ' + xhr.status);
+            }
+        };
+        xhr.send();
+    });
+    window.addEventListener('load', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8082/rewards/get-points');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var profile = xhr.response;
+                var p = document.querySelector('#points');
+                p.innerHTML = profile.points;
+            } else {
+                alert('Error: ' + xhr.status);
+            }
+        };
+        xhr.send();
+    });
+
+    const logoutBtn = document.querySelector('#logout-btn');
+    logoutBtn.addEventListener('click', function () {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8081/customer/logout');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                window.location.href = 'http://localhost:8080/login';
+            } else {
+                alert('Error: ' + xhr.status);
+            }
+        };
+        xhr.send();
+    });
+</script>
+</body>
+</html>

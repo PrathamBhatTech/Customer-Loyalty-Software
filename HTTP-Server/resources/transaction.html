@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transaction Page</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        /* Custom styles here */
+    </style>
+</head>
+<body>
+<!-- Main Content Section -->
+<main>
+    <div class="container">
+        <h1>Transaction Page</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Membership Tier: <span id="membershipTier"></span></h2>
+                <!-- Points Balance -->
+                <h2>Current Points: <span id="points"></span></h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Merchant -->
+                <h2>Merchant: Mallya Enterprises</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Reward</h4>
+                <h5>Name: <span id="reward-name"></span> </h5>
+                <h5>Points required: <span id="reward-cost"></span> </h5>
+                <h5>Units sold: <span id="reward-usold"></span></h5>
+                <h5>Discount: <span id="discount"></span> %</h5>
+            </div>
+            <div class="col-md-6">
+                <label for="redeemButton">Redeem</label>
+                <input type="checkbox" class="btn btn-primary" id="redeemButton" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Price Input -->
+                <div class="form-group">
+                    <label for="priceInput">Price:</label>
+                    <input type="number" class="form-control" id="priceInput" placeholder="Enter Price">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Points Input -->
+                <div class="form-group">
+                    <label for="pointsInput">Points to Use:</label>
+                    <input type="number" class="form-control" id="pointsInput" placeholder="Enter Points" value="0">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Total Amount to be Paid -->
+                <h2>Total Amount to be Paid: <span id="totalAmount"></span></h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Pay Button -->
+                <button type="button" class="btn btn-primary" id="payButton">Pay Now</button>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bootstrap JavaScript -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!-- Custom JavaScript -->
+<script>
+    var currentPoints;
+
+    window.addEventListener('load', function () {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8082/rewards/get-points');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                currentPoints = xhr.response;
+                const span = document.getElementById("points");
+                span.innerHTML = currentPoints.points;
+                const sp = document.getElementById("membershipTier");
+                sp.innerHTML = currentPoints.membershipTier;
+            }
+            else {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
+    });
+
+    window.addEventListener('load', function (){
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8082/rewards/get-reward');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                const reward = xhr.response;
+
+                const p = document.getElementById("reward-name");
+                p.innerHTML = reward.name;
+                const q = document.getElementById("reward-cost");
+                q.innerHTML = reward.cost;
+                const r = document.getElementById("reward-usold");
+                r.innerHTML = reward.usold;
+            }
+            else {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
+    })
+
+    window.addEventListener('load', function (){
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8082/rewards/get-discount');
+        // xhr.responseType = 'text';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                const discount = xhr.response;
+                const p = document.getElementById("discount");
+                p.innerHTML = discount;
+            }
+            else {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        };
+        xhr.send();
+    })
+
+    // Calculate total amount to be paid
+    function calculateTotalAmount() {
+        var priceInput = parseFloat(document.getElementById("priceInput").value);
+        var pointsInput = parseFloat(document.getElementById("pointsInput").value);
+        var currentPoints = parseFloat(document.getElementById("points").textContent);
+
+        var redeemButton = document.getElementById("redeemButton").checked;
+        var redeemPrice = parseFloat(document.getElementById("reward-cost").textContent);
+        var redeemDiscount = parseFloat(document.getElementById("discount").textContent);
+
+        if (isNaN(priceInput) || isNaN(pointsInput) || isNaN(currentPoints)) {
+            document.getElementById("totalAmount").textContent = "";
+        } else if (pointsInput > currentPoints) {
+            document.getElementById("totalAmount").textContent = "Not enough points!";
+        } else if (pointsInput < 0)  {
+            document.getElementById("totalAmount").textContent = "Points to use cannot be negative!";
+        } else if (pointsInput > priceInput) {
+            document.getElementById("totalAmount").textContent = "Points to use cannot be greater than price!";
+        } else {
+            var rp = 0;
+            if (redeemButton) {
+                rp = redeemPrice * (1 - redeemDiscount / 100);
+            }
+            var finalPrice = priceInput - pointsInput + rp;
+            document.getElementById("totalAmount").textContent = "$" + (finalPrice).toFixed(2);
+        }
+    }
+
+    // Update total amount to be paid on input change
+    document.getElementById("priceInput").addEventListener("input", calculateTotalAmount);
+    document.getElementById("pointsInput").addEventListener("input", calculateTotalAmount);
+    document.getElementById("redeemButton").addEventListener("change", calculateTotalAmount);
+
+    // Update current points value
+    document.getElementById("points").textContent = currentPoints; // Replace with actual value
+
+    // Handle pay button click
+    document.getElementById("payButton").addEventListener("click", async(event) => {
+        event.preventDefault();
+
+        var price = parseFloat(document.getElementById("priceInput").value);
+        var points = parseFloat(document.getElementById("pointsInput").value);
+        var currentPoints = parseFloat(document.getElementById("points").textContent);
+
+        if (isNaN(price) || isNaN(points) || isNaN(currentPoints)) {
+            alert("Please enter a valid price and points to use!");
+        } else if (points > currentPoints) {
+            alert("Not enough points!");
+        } else if (points < 0)  {
+            alert("Points to use cannot be negative!");
+        } else {
+            // Replace with actual API call
+            const response = await fetch('http://localhost:8082/rewards/transaction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"merchant": "Mallya Enterprises", "price": price, "pointsRedeemed": points})
+            });
+            if (response.ok) {
+                // reload page
+                window.location.reload();
+            } else {
+                alert('Error: login again');
+            }
+            alert("Payment successful!");
+        }
+    });
+</script>
+</body>
+</html>

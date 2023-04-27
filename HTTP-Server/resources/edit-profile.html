@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit Profile</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <style>
+    /* Custom styles here */
+  </style>
+</head>
+<body>
+<!-- Main Content Section -->
+<main>
+  <div class="container">
+    <h1>Edit Profile</h1>
+    <form>
+      <!-- Username Input -->
+      <div class="form-group">
+        <label for="usernameInput">Username:</label>
+        <input type="text" class="form-control" id="usernameInput" placeholder="Enter Username" readonly>
+      </div>
+      <!-- Name Input -->
+      <div class="form-group">
+        <label for="nameInput">Name:</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="Enter Name">
+      </div>
+      <!-- Phone Number Input -->
+      <div class="form-group">
+        <label for="phoneNumberInput">Phone Number:</label>
+        <input type="text" class="form-control" id="phoneNumberInput" placeholder="Enter Phone Number">
+      </div>
+      <!-- Date of Birth Input -->
+      <div class="form-group">
+        <label for="dobInput">Date of Birth:</label>
+        <input type="date" class="form-control" id="dobInput">
+      </div>
+      <!-- Password Input -->
+      <div class="form-group">
+        <label for="passwordInput">Password:</label>
+        <input type="password" class="form-control" id="passwordInput" placeholder="Enter Password">
+      </div>
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+</main>
+<!-- Bootstrap JavaScript -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!-- Custom JavaScript -->
+<script>
+  // Load profile data into the form fields
+  window.addEventListener('load', function () {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:8081/customer/profile');
+    xhr.responseType = 'json';
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        var profile = xhr.response;
+
+        var usernameInput = document.querySelector('#usernameInput');
+        usernameInput.value = profile.username;
+
+        var nameInput = document.querySelector('#nameInput');
+        nameInput.value = profile.name;
+
+        var phoneNumberInput = document.querySelector('#phoneNumberInput');
+        phoneNumberInput.value = profile.phoneNumber;
+
+        var dobInput = document.querySelector('#dobInput');
+        dobInput.value = profile.dob;
+      } else {
+        alert('Error: ' + xhr.status);
+      }
+    };
+    xhr.send();
+  });
+
+    // Save changes to the profile
+    var form = document.querySelector('form');
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      var nameInput = document.querySelector('#nameInput');
+      var phoneNumberInput = document.querySelector('#phoneNumberInput');
+      var dobInput = document.querySelector('#dobInput');
+      var passwordInput = document.querySelector('#passwordInput');
+
+      var profile = {
+        username: usernameInput.value,
+        name: nameInput.value,
+        phoneNumber: phoneNumberInput.value,
+        dob: dobInput.value,
+        password: passwordInput.value
+      };
+
+      console.log(profile);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:8081/customer/edit-profile');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function () {
+        if (xhr.status === 200 && xhr.readyState === 4) {
+          alert('Profile updated successfully');
+          window.location.href = 'http://localhost:8080/home'
+        } else {
+          // alert('Error: ' + xhr.status);
+        }
+      };
+      xhr.send(JSON.stringify(profile));
+    });
+</script>
+</body>
+</html>

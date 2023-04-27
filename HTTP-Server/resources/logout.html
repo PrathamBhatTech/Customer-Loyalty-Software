@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Logged Out</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<script>
+    window.addEventListener('load', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:8081/customer/logout');
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+        if (xhr.status === 200) {
+            var profile = xhr.response;
+        } else {
+            alert('Error: ' + xhr.status);
+        }
+        };
+        xhr.send();
+    });
+</script>
+<div class="container mt-5">
+  <h1>Logged Out</h1>
+  <p>You have been successfully logged out.</p>
+  <a href="http://localhost:8080/login" class="btn btn-primary">Login</a>
+</div>
+</body>
+</html>
