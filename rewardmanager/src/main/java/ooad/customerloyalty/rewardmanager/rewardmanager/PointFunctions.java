@@ -92,7 +92,6 @@ public class PointFunctions {
         return "Points added successfully";
     }
 
-    // TODO: Check total points everytime a transcation is done and update the membership tier accordingly
     public void checkMembership() {
         Points points = getPoints();
 

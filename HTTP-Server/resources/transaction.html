@@ -37,6 +37,10 @@
                 <h5>Units sold: <span id="reward-usold"></span></h5>
                 <h5>Discount: <span id="discount"></span> %</h5>
             </div>
+            <div class="col-md-6">
+                <label for="redeemButton">Redeem</label>
+                <input type="checkbox" class="btn btn-primary" id="redeemButton" />
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6">
@@ -139,6 +143,11 @@
         var priceInput = parseFloat(document.getElementById("priceInput").value);
         var pointsInput = parseFloat(document.getElementById("pointsInput").value);
         var currentPoints = parseFloat(document.getElementById("points").textContent);
+
+        var redeemButton = document.getElementById("redeemButton").checked;
+        var redeemPrice = parseFloat(document.getElementById("reward-cost").textContent);
+        var redeemDiscount = parseFloat(document.getElementById("discount").textContent);
+
         if (isNaN(priceInput) || isNaN(pointsInput) || isNaN(currentPoints)) {
             document.getElementById("totalAmount").textContent = "";
         } else if (pointsInput > currentPoints) {
@@ -148,13 +157,19 @@
         } else if (pointsInput > priceInput) {
             document.getElementById("totalAmount").textContent = "Points to use cannot be greater than price!";
         } else {
-            document.getElementById("totalAmount").textContent = "$" + (priceInput - pointsInput).toFixed(2);
+            var rp = 0;
+            if (redeemButton) {
+                rp = redeemPrice * (1 - redeemDiscount / 100);
+            }
+            var finalPrice = priceInput - pointsInput + rp;
+            document.getElementById("totalAmount").textContent = "$" + (finalPrice).toFixed(2);
         }
     }
 
     // Update total amount to be paid on input change
     document.getElementById("priceInput").addEventListener("input", calculateTotalAmount);
     document.getElementById("pointsInput").addEventListener("input", calculateTotalAmount);
+    document.getElementById("redeemButton").addEventListener("change", calculateTotalAmount);
 
     // Update current points value
     document.getElementById("points").textContent = currentPoints; // Replace with actual value
